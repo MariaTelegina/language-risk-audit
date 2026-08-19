@@ -1,0 +1,6 @@
+{
+  "name": "Language Risk Audit",
+  "description": "Check where a message could be interpreted differently across Englishes—and make it clearer without erasing anyone's variety.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
