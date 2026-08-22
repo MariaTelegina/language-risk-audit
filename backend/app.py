@@ -1,3 +1,7 @@
+import os
+
+os.environ.setdefault("TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD", "1")
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from multivalue import Dialects
