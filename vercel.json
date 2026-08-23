@@ -1,12 +1,20 @@
 {
   "services": {
     "frontend": {
-      "root": "./frontend",
-      "framework": "vite"
+      "root": ".",
+      "framework": "vite",
+      "buildCommand": "npx vite build",
+      "outputDirectory": "dist"
     },
     "backend": {
       "root": "./backend",
-      "entrypoint": "app:app"
+      "framework": "flask",
+      "entrypoint": "app:app",
+      "functions": {
+        "app.py": {
+          "maxDuration": 60
+        }
+      }
     }
   },
   "rewrites": [

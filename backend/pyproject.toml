@@ -1,0 +1,13 @@
+[project]
+name = "language-risk-audit-api"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "flask>=3.0.0",
+  "flask-cors>=5.0.0",
+  "google-genai>=1.20.0",
+  "python-dotenv>=1.0.0",
+]
+
+[tool.vercel]
+entrypoint = "app:app"

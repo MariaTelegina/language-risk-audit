@@ -34,14 +34,12 @@ The current version supports:
 
 ## Technology
 
-- React
-- TypeScript
-- Node.js
-- Express
+- React and TypeScript (Vite)
+- Flask backend on Vercel
 - Google Gemini API
-- Google AI Studio
+- Google AI Studio prototype UI and evaluation flow
 
-Gemini requests are handled by the server. The API key is not included in the client-side application or GitHub repository.
+Gemini requests are handled by Flask. The API key is not included in the client-side application or GitHub repository. Live checks are capped per visitor and across the whole site to control token use. Prepared examples do not call Gemini.
 
 ## Current status
 
@@ -50,17 +48,16 @@ This is an early hackathon MVP.
 Working:
 
 - example reports;
-- live sentence analysis;
+- live sentence analysis through Flask;
 - structured reports;
-- copy controls;
+- copy and print controls;
 - input validation;
-- server-side Gemini integration.
+- per-visitor live-check limits.
 
 Still being refined:
 
 - Print and Save as PDF layout;
 - human evaluation;
-- rate limiting;
 - broader language and dialect coverage.
 
 ## Method and limitations
@@ -89,9 +86,28 @@ Potential future additions include:
 ### Requirements
 
 - Node.js
+- Python 3.12
 - Gemini API key
 
 ### Installation
 
 ```bash
 npm install
+python -m venv backend/.venv
+backend\.venv\Scripts\activate
+pip install -r backend/requirements.txt
+copy .env.example .env
+```
+
+Set `GEMINI_API_KEY` in `.env`, then run Flask and Vite together:
+
+```bash
+python backend/app.py
+npm run dev
+```
+
+Open http://localhost:5173. Vite proxies `/api` to Flask on port 5000.
+
+### Vercel
+
+Keep the project Root Directory as the repository root so `vercel.json` can build the Vite app and Flask service together. Add `GEMINI_API_KEY` in Vercel Project Settings. Optional: `GEMINI_MODEL`, `ANALYZE_LIMIT_PER_VISITOR_PER_HOUR`, `GLOBAL_ANALYZE_LIMIT_PER_HOUR`.
