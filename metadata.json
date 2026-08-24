@@ -1,6 +1,8 @@
 {
-  "name": "Language Risk Audit",
-  "description": "Check where a message could be interpreted differently across Englishes—and make it clearer without erasing anyone's variety.",
+  "name": "Will It Travel - Language Risk Audit",
+  "description": "Evaluate how language shifts across American, Indian, and Singaporean Englishes with cross-dialect friction analysis and clear international rewrites.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

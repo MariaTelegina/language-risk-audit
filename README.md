@@ -1,97 +1,20 @@
-# Language Risk Audit
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+</div>
 
-Language Risk Audit is a research-informed AI prototype that helps writers identify potential misunderstandings across varieties of English before sending a message.
+# Run and deploy your AI Studio app
 
-Built for DoraHacks 2.0, 21–30 August 2026.
+This contains everything you need to run your app locally.
 
-## Current MVP
+View your app in AI Studio: https://ai.studio/apps/fe139faf-b892-4d16-b3d5-0c373ade4819
 
-Users can:
+## Run Locally
 
-- paste a sentence or short paragraph;
-- select two or three target audiences;
-- choose a communication context;
-- generate a structured language-risk report;
-- examine potential differences in interpretation;
-- copy a clearer international rewrite;
-- view example reports without making a Gemini request.
+**Prerequisites:**  Node.js
 
-The current version supports:
 
-- American English
-- Indian English
-- Singapore English
-
-## What the report includes
-
-- overall communication-risk level;
-- likely intended meaning;
-- potentially ambiguous phrases;
-- audience-specific interpretations;
-- possible communication friction;
-- suggested improvements;
-- a clearer international rewrite.
-
-## Technology
-
-- React
-- TypeScript
-- Node.js
-- Express
-- Google Gemini API
-- Google AI Studio
-
-Gemini requests are handled by the server. The API key is not included in the client-side application or GitHub repository.
-
-## Current status
-
-This is an early hackathon MVP.
-
-Working:
-
-- example reports;
-- live sentence analysis;
-- structured reports;
-- copy controls;
-- input validation;
-- server-side Gemini integration.
-
-Still being refined:
-
-- Print and Save as PDF layout;
-- human evaluation;
-- rate limiting;
-- broader language and dialect coverage.
-
-## Method and limitations
-
-The report is generated using Gemini and a structured linguistic evaluation framework.
-
-The system has not yet been comprehensively validated by speakers of all supported English varieties. Interpretations can vary between individuals and contexts, so results should be treated as prompts for thoughtful review rather than authoritative linguistic evidence.
-
-No external linguistic dataset is currently integrated into the application.
-
-## Planned development
-
-Potential future additions include:
-
-- a human-reviewed evaluation set;
-- Multi-VALUE integration for English-variety stress testing;
-- evidence from eWAVE and World Englishes corpora;
-- LinCE-based code-switching evaluation;
-- additional English varieties and languages;
-- CSV batch audits;
-- model comparison;
-- usage and cost controls.
-
-## Run locally
-
-### Requirements
-
-- Node.js
-- Gemini API key
-
-### Installation
-
-```bash
-npm install
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
