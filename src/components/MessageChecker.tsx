@@ -467,12 +467,12 @@ export const MessageChecker: React.FC = () => {
               <div />
             )}
 
-            <!-- Remaining Checks for LIMITING USE OF API -->
+            
             {remaining !== null && (
               <span className="text-[11px] text-[#7A7061] font-mono-tag">
                 {remaining} live {remaining === 1 ? 'check' : 'checks'} remaining this hour
               </span>
-            )}
+            ) /* Remaining Checks for LIMITING USE OF API */ }
 
             <button
               type="submit"
