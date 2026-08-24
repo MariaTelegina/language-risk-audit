@@ -21,7 +21,7 @@ app.config["MAX_CONTENT_LENGTH"] = 20 * 1024
 CORS(
     app,
     resources={r"/api/*": {"origins": [
-        "https://wit-will-it-travel.vercel.app/",   # replace with your real Vercel domain
+        "https://wit-will-it-travel.vercel.app",   # replace with your real Vercel domain
         "http://localhost:5173",          # keep for local dev
     ]}},
     supports_credentials=True,
