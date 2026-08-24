@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { GlobeLogo } from './GlobeLogo';
 import { Compass, Menu, X, ShieldCheck } from 'lucide-react';
 
-export type NavTab = 'audit' | 'research' | 'about' | 'contact';
+export type NavTab = 'audit' | 'research' | 'about'; // | 'contact';
 
 interface NavbarProps {
   activeTab: NavTab;

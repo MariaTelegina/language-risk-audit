@@ -3,7 +3,7 @@ import { Navbar, NavTab } from './components/Navbar';
 import { MessageChecker } from './components/MessageChecker';
 import { ResearchTheoryPage } from './components/ResearchTheoryPage';
 import { AboutPage } from './components/AboutPage';
-import { ContactPage } from './components/ContactPage';
+// import { ContactPage } from './components/ContactPage';
 import { Footer } from './components/Footer';
 import { DisclaimerModal } from './components/DisclaimerModal';
 
@@ -52,9 +52,7 @@ export default function App() {
           {activeTab === 'about' && (
             <AboutPage onBackToAudit={() => handleSelectTab('audit')} />
           )}
-          {activeTab === 'contact' && (
-            <ContactPage onBackToAudit={() => handleSelectTab('audit')} />
-          )}
+          {/* {activeTab === 'contact' && (<ContactPage onBackToAudit={() => handleSelectTab('audit')} />)} */}
         </main>
 
         <Footer onOpenDisclaimer={() => setIsDisclaimerOpen(true)} />
