@@ -16,8 +16,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onSelectTab, onOpenDi
   const navItems: { id: NavTab; label: string }[] = [
     { id: 'audit', label: 'Audit Tool' },
     { id: 'research', label: 'Research and Theory' },
-    { id: 'about', label: 'About' },
-    { id: 'contact', label: 'Contact' },
+    { id: 'about', label: 'About' }//,
+    //{ id: 'contact', label: 'Contact' },
   ];
 
   const handleNavClick = (tab: NavTab) => {

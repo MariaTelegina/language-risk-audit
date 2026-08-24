@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AnalysisReport,
   CommunicationContext,
@@ -49,6 +49,7 @@ export const MessageChecker: React.FC = () => {
   const [context, setContext] = useState<CommunicationContext>('Workplace');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [remaining, setRemaining] = useState<number | null>(null);
 
   // Analysis result state
   const [report, setReport] = useState<AnalysisReport | null>(null);
@@ -57,6 +58,23 @@ export const MessageChecker: React.FC = () => {
   const [activeReportAudiences, setActiveReportAudiences] = useState<EnglishVariety[]>([]);
   const [activeReportText, setActiveReportText] = useState<string>('');
   const [showCompleteNotification, setShowCompleteNotification] = useState<boolean>(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API_BASE}/api/health`, { credentials: 'include' })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!cancelled && typeof data.remaining === 'number') {
+          setRemaining(data.remaining);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setRemaining(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleAudienceToggle = (variety: EnglishVariety) => {
     setSelectedAudiences((prev) => {
@@ -118,6 +136,7 @@ export const MessageChecker: React.FC = () => {
       const response = await fetch(`${API_BASE}/api/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           text: trimmed,
           selectedAudiences,
@@ -126,6 +145,10 @@ export const MessageChecker: React.FC = () => {
       });
 
       const data = await response.json();
+
+      if (typeof data.remaining === 'number') {
+        setRemaining(data.remaining);
+      }
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to analyze message. Please try again.');
@@ -444,9 +467,16 @@ export const MessageChecker: React.FC = () => {
               <div />
             )}
 
+            <!-- Remaining Checks for LIMITING USE OF API -->
+            {remaining !== null && (
+              <span className="text-[11px] text-[#7A7061] font-mono-tag">
+                {remaining} live {remaining === 1 ? 'check' : 'checks'} remaining this hour
+              </span>
+            )}
+
             <button
               type="submit"
-              disabled={isLoading || !text.trim() || selectedAudiences.length < 2}
+              disabled={isLoading || !text.trim() || selectedAudiences.length < 2 || remaining === 0}
               className="inline-flex items-center justify-center space-x-2 px-8 py-3.5 rounded-xl bg-[#E48C35] hover:bg-[#C97420] active:bg-[#AF6014] disabled:bg-[#E2D8CC] disabled:text-[#9A8F7F] disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider font-mono-tag shadow-md hover:shadow-lg transition-all cursor-pointer"
             >
               {isLoading ? (
