@@ -1,36 +1,5 @@
 {
-  "services": {
-    "frontend": {
-      "root": ".",
-      "framework": "vite",
-      "buildCommand": "npx vite build",
-      "outputDirectory": "dist"
-    },
-    "backend": {
-      "root": "./backend",
-      "framework": "flask",
-      "entrypoint": "app:app",
-      "functions": {
-        "app.py": {
-          "maxDuration": 60
-        }
-      }
-    }
-  },
   "rewrites": [
-    {
-      "source": "/api(/.*)?",
-      "destination": {
-        "type": "service",
-        "service": "backend"
-      }
-    },
-    {
-      "source": "/(.*)",
-      "destination": {
-        "type": "service",
-        "service": "frontend"
-      }
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

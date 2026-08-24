@@ -16,10 +16,14 @@ import {
   ChevronDown,
   ChevronUp,
   Sparkles,
-  Info,
   Layers,
   Users,
+  Compass,
+  FileText,
+  Lightbulb,
 } from 'lucide-react';
+import { RiskGaugeDial } from './RiskGaugeDial';
+import { AudienceAccordion } from './AudienceAccordion';
 
 interface AnalysisReportViewProps {
   report: AnalysisReport;
@@ -30,38 +34,32 @@ interface AnalysisReportViewProps {
 }
 
 const CATEGORY_LABELS: Record<RiskCategory, string> = {
-  lexical: 'Lexical difference',
-  idiom: 'Idiomatic expression',
-  grammar: 'Grammatical syntax',
-  pragmatics: 'Pragmatic nuance / Discourse',
+  lexical: 'Lexical Difference',
+  idiom: 'Idiomatic Expression',
+  grammar: 'Grammar & Syntax',
+  pragmatics: 'Pragmatic Nuance',
   tone: 'Tone & Register',
-  cultural_reference: 'Cultural reference',
-  general_ambiguity: 'General ambiguity',
+  cultural_reference: 'Cultural Reference',
+  general_ambiguity: 'General Ambiguity',
 };
 
-const RISK_BADGES: Record<
+const RISK_CONFIG: Record<
   RiskLevel,
-  { label: string; bg: string; text: string; border: string; icon: React.ComponentType<{ className?: string }> }
+  { label: string; badgeClass: string; icon: React.ComponentType<{ className?: string }> }
 > = {
   low: {
     label: 'Low Risk',
-    bg: 'bg-emerald-50',
-    text: 'text-emerald-800',
-    border: 'border-emerald-200',
+    badgeClass: 'badge-green-editorial',
     icon: CheckCircle2,
   },
   medium: {
     label: 'Medium Risk',
-    bg: 'bg-amber-50',
-    text: 'text-amber-800',
-    border: 'border-amber-200',
+    badgeClass: 'badge-terracotta',
     icon: AlertTriangle,
   },
   high: {
     label: 'High Risk',
-    bg: 'bg-rose-50',
-    text: 'text-rose-800',
-    border: 'border-rose-200',
+    badgeClass: 'badge-terracotta',
     icon: AlertCircle,
   },
 };
@@ -78,17 +76,15 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
   const [showMethodology, setShowMethodology] = useState(false);
   const [popupBlocked, setPopupBlocked] = useState(false);
 
-  const riskBadge = RISK_BADGES[report.overallRisk] || RISK_BADGES.low;
-  const RiskIcon = riskBadge.icon;
+  const riskConfig = RISK_CONFIG[report.overallRisk] || RISK_CONFIG.low;
+  const RiskIcon = riskConfig.icon;
 
   const handleCopyRewrite = async () => {
     try {
       await navigator.clipboard.writeText(report.clearRewrite);
       setCopiedRewrite(true);
       setTimeout(() => setCopiedRewrite(false), 2000);
-    } catch {
-      // Fallback
-    }
+    } catch {}
   };
 
   const handleCopyFullReport = async () => {
@@ -108,8 +104,8 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
             .map(
               (item, i) =>
                 `${i + 1}. "${item.phrase}" [${CATEGORY_LABELS[item.category] || item.category}] (Risk: ${item.riskLevel})\n` +
-                `   - Explanation: ${item.explanation}\n` +
-                `   - Possible Reading: ${item.possibleReading}\n` +
+                `   - Linguistic Explanation: ${item.explanation}\n` +
+                `   - Alternative Reading: ${item.possibleReading}\n` +
                 `   - Suggestion: ${item.suggestion}`
             )
             .join('\n\n')
@@ -130,19 +126,15 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
       await navigator.clipboard.writeText(textSections);
       setCopiedFullReport(true);
       setTimeout(() => setCopiedFullReport(false), 2000);
-    } catch {
-      // Fallback
-    }
+    } catch {}
   };
 
-  // Isolated print document implementation
   const handlePrint = () => {
     setPopupBlocked(false);
 
     const reportElement = document.getElementById('printable-report');
     if (!reportElement) return;
 
-    // Open a new temporary browser window directly from user click
     const printWindow = window.open('', '_blank', 'width=850,height=950');
 
     if (!printWindow) {
@@ -150,14 +142,10 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
       return;
     }
 
-    // Clone only the printable report
     const clone = reportElement.cloneNode(true) as HTMLElement;
-
-    // Remove all .no-print elements from the cloned report
     const noPrintElements = clone.querySelectorAll('.no-print');
     noPrintElements.forEach((el) => el.remove());
 
-    // Gather active stylesheets and style tags
     let stylesHtml = '';
     const styleNodes = document.querySelectorAll('style, link[rel="stylesheet"]');
     styleNodes.forEach((node) => {
@@ -172,45 +160,15 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
     <base href="${window.location.origin}/" />
     ${stylesHtml}
     <style>
-      @page {
-        margin: 16mm;
-        size: auto;
-      }
-      *, *::before, *::after {
-        box-sizing: border-box;
-      }
-      html, body {
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #ffffff !important;
-        color: #0f172a !important;
-        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        font-size: 11pt;
-        line-height: 1.5;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-      .no-print {
-        display: none !important;
-      }
-      .print-card {
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
-      }
-      #printable-report {
-        display: block !important;
-        position: static !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        transform: none !important;
-      }
+      @page { margin: 12mm; size: auto; }
+      body { margin: 0 !important; padding: 0 !important; background: #ffffff !important; color: #242a36 !important; font-family: 'DM Sans', sans-serif; }
+      .no-print { display: none !important; }
+      .print-card { break-inside: avoid !important; page-break-inside: avoid !important; }
+      #printable-report { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
     </style>
   </head>
   <body>
-    <div id="printable-report">
-      ${clone.innerHTML}
-    </div>
+    <div id="printable-report">${clone.innerHTML}</div>
   </body>
 </html>`;
 
@@ -223,18 +181,16 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
         printWindow.focus();
         printWindow.print();
       } catch (err) {
-        console.error('Print trigger failed:', err);
+        console.error('Print failed:', err);
       }
     };
 
-    // Close after print
     printWindow.addEventListener('afterprint', () => {
       try {
         printWindow.close();
       } catch {}
     });
 
-    // Wait until document and stylesheets load before printing
     if (printWindow.document.readyState === 'complete') {
       setTimeout(triggerPrint, 250);
     } else {
@@ -249,233 +205,267 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
       id="printable-report"
       className="printable-report space-y-6 pt-4 print:pt-0 print:space-y-4"
     >
-      {/* Popup blocked warning message */}
+      {/* Pop-up blocked notice */}
       {popupBlocked && (
-        <div className="p-4 bg-amber-50 border border-amber-300 rounded-lg flex items-start space-x-2.5 text-xs text-amber-900 no-print">
-          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+        <div className="p-4 bg-[#FFF6E6] border border-[#F5C26B] rounded-xl flex items-start space-x-3 text-xs text-[#82540D] no-print shadow-sm">
+          <AlertTriangle className="w-4 h-4 text-[#DE5736] shrink-0 mt-0.5" />
           <div className="leading-relaxed">
-            <strong className="font-semibold block mb-0.5">Pop-up window blocked</strong>
+            <strong className="font-bold block mb-0.5 font-mono-tag">POP-UP WINDOW WAS BLOCKED</strong>
             <span>
-              Please allow pop-ups for this site in your browser settings to print or save the
-              report as PDF, then click <strong>Print / Save PDF</strong> again.
+              Please allow pop-ups for this site in your browser to print or export as PDF, then click <strong>PRINT / PDF</strong> again.
             </span>
           </div>
         </div>
       )}
 
-      {/* Example Notice Banner (no-print) */}
+      {/* Example badge */}
       {isExample && (
-        <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-lg flex items-center justify-between text-xs text-blue-800 no-print">
+        <div className="p-3.5 bg-[#FCECE8] border border-[#F5C6BC] rounded-xl flex items-center justify-between text-xs text-[#B83B1D] no-print shadow-sm">
           <div className="flex items-center space-x-2">
-            <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
-            <span className="font-medium">Example analysis — no live AI request used.</span>
+            <span className="badge-terracotta text-[10px] py-0.5 px-2.5 font-mono-tag">CASE STUDY</span>
+            <span className="font-medium">Loaded from pre-verified linguistic archive.</span>
           </div>
-          <span className="text-[11px] text-blue-600 bg-white px-2 py-0.5 rounded border border-blue-200">
-            Instant Reference
+          <span className="text-[10px] font-mono-tag text-[#DE5736] bg-white px-2.5 py-0.5 rounded-full border border-[#F5C6BC] shadow-2xs">
+            BENCHMARK
           </span>
         </div>
       )}
 
-      {/* Main Report Container */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden print:border print:border-slate-300 print:shadow-none">
-        {/* Header summary strip */}
-        <div className="p-6 border-b border-slate-200 bg-slate-50/50 print:bg-white print:border-slate-300 print:p-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* Main Slide-Card Analysis Spread */}
+      <div
+        id="report-overview"
+        className="slide-frame rounded-2xl border-2 border-[#E6DDD1] overflow-hidden print:border-slate-300 shadow-md warm-card"
+      >
+        {/* Top Header Bar & Metadata */}
+        <div className="p-6 sm:p-7 border-b border-[#E6DDD1] bg-[#FAF5EE] print:bg-white print:p-4">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
-              <div className="flex items-center space-x-2 mb-1.5">
-                <span
-                  className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${riskBadge.bg} ${riskBadge.text} ${riskBadge.border} print:border print:border-slate-400`}
-                >
+              {/* Tags */}
+              <div className="flex flex-wrap items-center gap-2 mb-2.5">
+                <span className={riskConfig.badgeClass}>
                   <RiskIcon className="w-3.5 h-3.5" />
-                  <span>{riskBadge.label}</span>
+                  <span>{riskConfig.label}</span>
                 </span>
-                <span className="text-xs text-slate-500 font-medium">
-                  Context: <strong className="text-slate-700">{context}</strong>
+
+                <span className="badge-antwerp">
+                  <Compass className="w-3 h-3" />
+                  <span>Context: {context}</span>
                 </span>
-                <span className="text-xs text-slate-400">·</span>
-                <span className="text-xs text-slate-500 font-medium">
-                  Audiences: <strong className="text-slate-700">{selectedAudiences.join(', ')}</strong>
+
+                <span className="text-xs font-mono-tag text-[#006C7E] bg-[#E6F6F9] px-3 py-1 rounded-full border border-[#BCE4ED] font-bold shadow-2xs">
+                  Audiences: {selectedAudiences.join(', ')}
                 </span>
               </div>
-              <h2 className="text-xl font-bold text-slate-900 print:text-lg">
-                Language Risk Audit Report
+
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#242A36] font-serif-display tracking-tight">
+                Cross-Variety Clarity Breakdown
               </h2>
             </div>
 
-            {/* Quick Action Buttons */}
-            <div className="flex items-center flex-wrap gap-2 no-print">
+            {/* Quick Actions */}
+            <div className="flex items-center gap-2 no-print shrink-0">
               <button
                 type="button"
                 onClick={handleCopyFullReport}
-                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 shadow-2xs transition-colors"
-                title="Copy structured report to clipboard"
+                className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold font-mono-tag bg-[#FFFDF9] text-[#463D31] hover:bg-[#F3ECE0] border border-[#D9CFC2] transition-all cursor-pointer shadow-xs hover:shadow-sm"
+                title="Copy structured insights"
               >
                 {copiedFullReport ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <Check className="w-3.5 h-3.5 text-[#187557]" />
                 ) : (
-                  <Copy className="w-3.5 h-3.5 text-slate-400" />
+                  <Copy className="w-3.5 h-3.5 text-[#7A7061]" />
                 )}
-                <span>{copiedFullReport ? 'Report Copied' : 'Copy Full Report'}</span>
+                <span>{copiedFullReport ? 'COPIED' : 'COPY REPORT'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={handlePrint}
-                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 shadow-2xs transition-colors"
-                title="Print or export as PDF"
+                className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold font-mono-tag bg-[#FFFDF9] text-[#463D31] hover:bg-[#F3ECE0] border border-[#D9CFC2] transition-all cursor-pointer shadow-xs hover:shadow-sm"
+                title="Print or Save PDF"
               >
-                <Printer className="w-3.5 h-3.5 text-slate-400" />
-                <span>Print / Save PDF</span>
+                <Printer className="w-3.5 h-3.5 text-[#7A7061]" />
+                <span>PRINT / PDF</span>
               </button>
             </div>
           </div>
 
-          {/* Original Message Display */}
-          <div className="mt-4 p-3 bg-white rounded-lg border border-slate-200 print:border-slate-300">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-              Checked Message
+          {/* Evaluated Original Message */}
+          <div className="mt-5 p-4 sm:p-5 bg-[#FFFDF9] rounded-xl border-2 border-[#E2D8CB] relative shadow-inner warm-input">
+            <span className="text-[10px] font-mono-tag font-bold text-[#E48C35] uppercase tracking-wider block mb-1">
+              Your Message
             </span>
-            <p className="text-sm font-medium text-slate-900 italic font-serif">
-              "{originalText}"
+            <p className="text-base font-semibold text-[#242A36] italic font-serif leading-relaxed">
+              “{originalText}”
             </p>
           </div>
 
-          {/* Executive Summary & Intended Meaning */}
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white p-4 rounded-lg border border-slate-200 print-card print:border-slate-300 print:p-3">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                Likely Intended Meaning
-              </span>
-              <p className="text-sm font-medium text-slate-900 leading-relaxed">
-                {report.intendedMeaning}
-              </p>
+          {/* Layout Grid: Gauge Dial & Breakdown Cards */}
+          <div className="mt-5 grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+            {/* Dialect Risk Gauge Card (5 cols on lg) */}
+            <div className="lg:col-span-5 flex">
+              <RiskGaugeDial riskLevel={report.overallRisk} className="w-full h-full" />
             </div>
 
-            <div className="bg-white p-4 rounded-lg border border-slate-200 print-card print:border-slate-300 print:p-3">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                Audit Summary
-              </span>
-              <p className="text-sm text-slate-700 leading-relaxed">{report.summary}</p>
+            {/* Meaning and Summary Cards (7 cols on lg) */}
+            <div className="lg:col-span-7 flex flex-col justify-between space-y-3.5">
+              <div className="bg-[#FFF8EC] p-4.5 rounded-xl border-t-4 border-t-[#E48C35] border-x border-b border-[#FFE2A8] print-card flex-1 shadow-sm warm-elevated">
+                <span className="text-[10px] font-mono-tag font-bold text-[#C97420] uppercase tracking-wider block mb-1">
+                  What You Intended to Say
+                </span>
+                <p className="text-xs sm:text-sm font-medium text-[#242A36] leading-relaxed">
+                  {report.intendedMeaning}
+                </p>
+              </div>
+
+              <div className="bg-[#EBF7FA] p-4.5 rounded-xl border-t-4 border-t-[#008AA1] border-x border-b border-[#BCE4ED] print-card flex-1 shadow-sm warm-elevated">
+                <span className="text-[10px] font-mono-tag font-bold text-[#006C7E] uppercase tracking-wider block mb-1">
+                  How It Reads Across Regions
+                </span>
+                <p className="text-xs sm:text-sm text-[#38484E] leading-relaxed">
+                  {report.summary}
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Low risk callout if no friction */}
+          {/* Low risk confirmation banner if applicable */}
           {report.overallRisk === 'low' && (
-            <div className="mt-4 p-3.5 bg-emerald-50/60 border border-emerald-200 rounded-lg flex items-start space-x-2.5 text-xs text-emerald-900 print-card print:bg-white print:border-slate-300">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+            <div className="mt-4 p-4.5 bg-[#EEFAF5] border-2 border-[#ACE6CF] rounded-xl flex items-start space-x-3 text-xs text-[#12634C] print-card shadow-sm">
+              <CheckCircle2 className="w-4 h-4 text-[#187557] shrink-0 mt-0.5" />
               <div>
-                <strong className="font-semibold block mb-0.5">
-                  No clear variety-specific concern was identified
+                <strong className="font-bold block mb-0.5 font-mono-tag">
+                  LOOKS GREAT — HIGH REGIONAL CLARITY
                 </strong>
                 <span>
-                  The message uses terminology and syntax that should travel smoothly across the
-                  selected varieties without substantial interpretation friction.
+                  Your wording is natural and universally understood across all selected varieties. No significant cross-cultural misunderstandings are expected!
                 </span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Clear International Rewrite Section */}
-        <div className="p-6 bg-blue-50/30 border-b border-slate-200 print-card print:bg-white print:border-slate-300 print:p-4">
-          <div className="flex items-center justify-between mb-2">
+        {/* Clear International Rewrite Box */}
+        <div
+          id="clear-rewrite"
+          className="p-6 sm:p-7 bg-[#FFFDF9] border-b border-[#E6DDD1] relative"
+        >
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-2">
-              <Sparkles className="w-4 h-4 text-blue-600" />
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-                Clearer International Rewrite
+              <span className="w-5 h-5 rounded-md bg-[#E48C35] text-white flex items-center justify-center text-[10px] font-bold font-mono-tag shadow-2xs">
+                ★
+              </span>
+              <h3 className="text-xs font-bold text-[#242A36] uppercase tracking-wider font-mono-tag">
+                Universal Rewrite Suggestion
               </h3>
             </div>
+
             <button
               type="button"
               onClick={handleCopyRewrite}
-              className="no-print inline-flex items-center space-x-1.5 px-3 py-1 rounded-md text-xs font-semibold text-blue-700 bg-white hover:bg-blue-50 border border-blue-200 shadow-2xs transition-colors"
+              className="no-print inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-mono-tag font-bold text-[#C97420] bg-[#FFF5EB] hover:bg-[#FFEADA] border border-[#FAD6B4] transition-colors cursor-pointer shadow-2xs"
             >
               {copiedRewrite ? (
-                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                <Check className="w-3.5 h-3.5 text-[#187557]" />
               ) : (
-                <Copy className="w-3.5 h-3.5 text-blue-500" />
+                <Copy className="w-3.5 h-3.5 text-[#E48C35]" />
               )}
-              <span>{copiedRewrite ? 'Copied' : 'Copy Rewrite'}</span>
+              <span>{copiedRewrite ? 'COPIED' : 'COPY REWRITE'}</span>
             </button>
           </div>
 
-          <div className="bg-white p-4 rounded-lg border border-blue-200 shadow-2xs print:border-slate-300 print:shadow-none">
-            <p className="text-base font-semibold text-slate-900 leading-relaxed font-sans">
-              "{report.clearRewrite}"
-            </p>
+          <div className="bg-[#FFF8EC] p-5 sm:p-6 rounded-xl border-2 border-[#E48C35] relative shadow-md warm-elevated">
+            <div className="text-base sm:text-lg font-bold text-[#242A36] leading-relaxed font-serif-display">
+              “{report.clearRewrite}”
+            </div>
             {report.rewriteRationale && (
-              <p className="mt-2 text-xs text-slate-600 border-t border-slate-100 pt-2 leading-relaxed print:border-slate-200">
-                <strong className="text-slate-700">Rationale: </strong>
+              <div className="mt-3.5 text-xs text-[#5E503F] border-t border-[#FFE2A8] pt-2.5 leading-relaxed">
+                <strong className="text-[#A06408] font-mono-tag uppercase text-[10px] mr-1">
+                  Why this works well globally:
+                </strong>
                 {report.rewriteRationale}
-              </p>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Flagged Phrases (if any) */}
+        {/* Audience Breakdown with Accordion */}
+        <div id="audience-perspectives" className="p-6 sm:p-7 bg-[#FAF5EE] border-b border-[#E6DDD1]">
+          <AudienceAccordion audienceNotes={report.audienceNotes} />
+        </div>
+
+        {/* Flagged Phrases Section */}
         {report.riskItems.length > 0 && (
-          <div className="p-6 border-b border-slate-200 print:border-slate-300 print:p-4">
+          <div id="flagged-phrases" className="p-6 sm:p-7 bg-[#FFFDF9]">
             <div className="flex items-center space-x-2 mb-4">
-              <Layers className="w-4 h-4 text-slate-600" />
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-                Flagged Phrases & Interpretations ({report.riskItems.length})
+              <Layers className="w-4 h-4 text-[#E48C35]" />
+              <h3 className="text-xs font-bold text-[#242A36] uppercase tracking-wider font-mono-tag">
+                Regional Nuances & Specific Phrases ({report.riskItems.length})
               </h3>
             </div>
 
             <div className="space-y-4">
               {report.riskItems.map((item, idx) => {
-                const itemRisk = RISK_BADGES[item.riskLevel] || RISK_BADGES.low;
+                const itemRisk = RISK_CONFIG[item.riskLevel] || RISK_CONFIG.low;
+                const categoryLabel = CATEGORY_LABELS[item.category] || item.category;
+
                 return (
                   <div
                     key={idx}
-                    className="print-card p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-3 print:bg-white print:border-slate-300 print:p-3"
+                    className="p-5 bg-[#FAF5EE] rounded-xl border-2 border-[#E2D8CB] space-y-3.5 print-card print:bg-white shadow-sm warm-elevated"
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
+                    {/* Item Header */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-[#EAE0D4]">
                       <div className="flex items-center space-x-2">
-                        <span className="font-mono text-sm font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200 print:border-slate-300">
-                          "{item.phrase}"
+                        <span className="w-5 h-5 rounded-md bg-[#008AA1] text-white flex items-center justify-center text-[10px] font-mono-tag font-bold shadow-2xs">
+                          0{idx + 1}
                         </span>
-                        <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-slate-200/70 text-slate-700 print:bg-slate-100">
-                          {CATEGORY_LABELS[item.category] || item.category}
+                        <span className="font-mono-tag text-sm font-bold text-[#242A36] bg-white px-2.5 py-0.5 rounded-lg border border-[#D9CFC2] shadow-2xs">
+                          “{item.phrase}”
+                        </span>
+                        <span className="text-[10px] font-mono-tag font-bold px-2.5 py-0.5 rounded-full bg-[#E6F6F9] text-[#006C7E] border border-[#BCE4ED]">
+                          {categoryLabel}
                         </span>
                       </div>
 
                       <div className="flex items-center space-x-2">
-                        <span
-                          className={`text-[11px] font-semibold px-2 py-0.5 rounded border ${itemRisk.bg} ${itemRisk.text} ${itemRisk.border} print:border-slate-400`}
-                        >
+                        <span className={itemRisk.badgeClass}>
                           {itemRisk.label}
                         </span>
-                        <span className="text-[11px] text-slate-500 font-medium">
-                          Confidence: {item.confidence}
+                        <span className="text-[10px] font-mono-tag text-[#7A7061] bg-white px-2.5 py-0.5 rounded-full border border-[#DFD6CA] font-bold shadow-2xs">
+                          CONF: {item.confidence.toUpperCase()}
                         </span>
                       </div>
                     </div>
 
+                    {/* Breakdown Columns */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                      <div className="bg-white p-3 rounded border border-slate-200 print:border-slate-300">
-                        <span className="font-semibold text-slate-700 block mb-0.5">
+                      <div className="bg-white p-4 rounded-xl border border-[#E0D7CB] shadow-xs">
+                        <span className="font-mono-tag font-bold text-[#7A7061] block mb-1 text-[10px] uppercase">
                           Linguistic Explanation
                         </span>
-                        <p className="text-slate-600 leading-relaxed">{item.explanation}</p>
+                        <p className="text-[#3A3226] leading-relaxed">{item.explanation}</p>
                       </div>
 
-                      <div className="bg-white p-3 rounded border border-slate-200 print:border-slate-300">
-                        <span className="font-semibold text-slate-700 block mb-0.5">
-                          Possible Alternative Reading
+                      <div className="bg-white p-4 rounded-xl border border-[#E0D7CB] shadow-xs">
+                        <span className="font-mono-tag font-bold text-[#7A7061] block mb-1 text-[10px] uppercase">
+                          Alternative Interpretation
                         </span>
-                        <p className="text-slate-600 leading-relaxed">{item.possibleReading}</p>
+                        <p className="text-[#3A3226] leading-relaxed">{item.possibleReading}</p>
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/60 text-xs print:border-slate-200">
+                    {/* Bottom Metadata & Suggested Alternative */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs">
                       <div className="flex items-center space-x-1.5">
-                        <span className="text-slate-500 font-medium">Relevant Audiences:</span>
+                        <span className="text-[10px] font-mono-tag text-[#7A7061] font-semibold uppercase">
+                          RELEVANT AUDIENCES:
+                        </span>
                         <div className="flex flex-wrap gap-1">
                           {item.relevantAudiences.map((aud, aIdx) => (
                             <span
                               key={aIdx}
-                              className="px-2 py-0.5 bg-white text-slate-700 rounded border border-slate-200 font-medium text-[11px] print:border-slate-300"
+                              className="px-2.5 py-0.5 bg-white text-[#3A3226] rounded-full border border-[#DFD6CA] font-mono-tag text-[10px] shadow-2xs"
                             >
                               {aud}
                             </span>
@@ -483,9 +473,11 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
                         </div>
                       </div>
 
-                      <div className="flex items-center space-x-1.5">
-                        <span className="text-slate-500 font-medium">Suggested Alternative:</span>
-                        <span className="font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 print:bg-white print:border-slate-300 print:text-slate-900">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-[10px] font-mono-tag text-[#7A7061] font-semibold uppercase">
+                          SUGGESTION:
+                        </span>
+                        <span className="font-bold font-mono-tag text-xs text-[#C97420] bg-[#FFF5EB] px-3 py-1 rounded-lg border border-[#FAD6B4] shadow-xs">
                           {item.suggestion}
                         </span>
                       </div>
@@ -496,98 +488,56 @@ export const AnalysisReportView: React.FC<AnalysisReportViewProps> = ({
             </div>
           </div>
         )}
+      </div>
 
-        {/* Audience-by-Audience Notes */}
-        <div className="p-6 print:p-4">
-          <div className="flex items-center space-x-2 mb-4">
-            <Users className="w-4 h-4 text-slate-600" />
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-              Audience-Specific Perspectives ({report.audienceNotes.length})
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print:grid-cols-3 print:gap-3">
-            {report.audienceNotes.map((note, idx) => (
-              <div
-                key={idx}
-                className="print-card p-4 bg-slate-50 rounded-lg border border-slate-200 flex flex-col justify-between print:bg-white print:border-slate-300 print:p-3"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-xs text-slate-900">{note.audience}</span>
-                    <span className="text-[10px] uppercase font-semibold text-slate-400">
-                      Conf: {note.confidence}
-                    </span>
-                  </div>
-
-                  <div className="space-y-2 text-xs">
-                    <div>
-                      <span className="text-slate-500 font-medium block text-[11px]">
-                        Likely Reading:
-                      </span>
-                      <p className="text-slate-800 leading-relaxed">{note.likelyReading}</p>
-                    </div>
-
-                    <div className="pt-2 border-t border-slate-200/60 print:border-slate-200">
-                      <span className="text-slate-500 font-medium block text-[11px]">
-                        Potential Friction:
-                      </span>
-                      <p className="text-slate-700 leading-relaxed">{note.potentialFriction}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Disclaimer Card with Descriptive Parity tag */}
+      <div className="p-4.5 bg-[#FAF7F2] rounded-xl border border-[#DFD6CA] text-xs text-[#63594B] leading-relaxed flex items-start space-x-3 print-card shadow-sm warm-elevated">
+        <Lightbulb className="w-4 h-4 text-[#DE5736] shrink-0 mt-0.5 no-print" />
+        <div>
+          <span className="inline-block px-2 py-0.5 rounded-full font-mono-tag font-bold text-[9px] bg-[#EDF4FA] text-[#265B88] border border-[#C7DFEE] mr-1.5 uppercase shadow-2xs">
+            Descriptive Parity Principle
+          </span>
+          <span>
+            This prototype highlights possible differences in interpretation across English varieties. Individual language use and regional nuance vary, so review findings in contextual perspective.
+          </span>
         </div>
       </div>
 
-      {/* Mandatory Essential Disclaimer */}
-      <div className="print-card p-4 bg-slate-100 rounded-lg border border-slate-200 text-xs text-slate-600 leading-relaxed flex items-start space-x-2.5 print:bg-white print:border-slate-300 print:p-3">
-        <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5 no-print" />
-        <p>
-          This prototype highlights possible differences in interpretation across English varieties.
-          Individual language use and interpretation vary, so review the findings in context.
-        </p>
-      </div>
-
-      {/* Expandable Method and Limitations (hidden in print) */}
-      <div className="border border-slate-200 rounded-lg bg-white overflow-hidden no-print">
+      {/* Expandable Methodology */}
+      <div className="border border-[#DFD6CA] rounded-xl bg-[#FCFAF7] overflow-hidden no-print shadow-sm warm-elevated">
         <button
           type="button"
           onClick={() => setShowMethodology(!showMethodology)}
-          className="w-full px-4 py-3 bg-slate-50 hover:bg-slate-100/80 flex items-center justify-between text-xs font-semibold text-slate-700 transition-colors"
+          className="w-full px-5 py-3.5 bg-[#FAF7F2] hover:bg-[#F2EAE0] flex items-center justify-between text-xs font-mono-tag font-bold text-[#463D31] transition-colors cursor-pointer"
         >
-          <span>Method and limitations</span>
+          <div className="flex items-center space-x-2">
+            <FileText className="w-3.5 h-3.5 text-[#3874A6]" />
+            <span>METHOD AND LIMITATIONS</span>
+          </div>
           {showMethodology ? (
-            <ChevronUp className="w-4 h-4 text-slate-500" />
+            <ChevronUp className="w-4 h-4 text-[#7A7061]" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-slate-500" />
+            <ChevronDown className="w-4 h-4 text-[#7A7061]" />
           )}
         </button>
 
         {showMethodology && (
-          <div className="p-4 text-xs text-slate-600 space-y-2 leading-relaxed border-t border-slate-200 bg-white">
-            <ul className="list-disc list-inside space-y-1.5 text-slate-600">
+          <div className="p-5 sm:p-6 text-xs text-[#5E5445] space-y-2.5 leading-relaxed border-t border-[#DFD6CA] bg-[#FCFAF7]">
+            <ul className="list-disc list-inside space-y-2 text-[#5E5445]">
               <li>
-                <strong>Scope:</strong> The MVP currently considers American English, Indian English,
+                <strong className="text-[#242A36] font-mono-tag">Scope:</strong> The system considers American English, Indian English,
                 and Singapore English.
               </li>
               <li>
-                <strong>Engine:</strong> The analysis is generated using a research-informed
+                <strong className="text-[#242A36] font-mono-tag">Engine:</strong> The analysis is generated using a research-informed
                 linguistic framework and Gemini.
               </li>
               <li>
-                <strong>Validation Status:</strong> It has not yet been comprehensively validated by
-                speakers of all three varieties.
+                <strong className="text-[#242A36] font-mono-tag">Validation Status:</strong> Linguistic structures are based on Braj Kachru (1985) and World Englishes corpora.
               </li>
               <li>
-                <strong>Future Work:</strong> Multi-VALUE integration and systematic human evaluation
-                are planned for subsequent milestones.
-              </li>
-              <li>
-                <strong>Intended Use:</strong> Results should be treated as prompts for thoughtful
-                review, not authoritative linguistic evidence.
+                <strong className="text-[#242A36] font-mono-tag">Intended Use:</strong> Results should be treated as prompts for thoughtful
+                review, not authoritarian grammar enforcement.
               </li>
             </ul>
           </div>

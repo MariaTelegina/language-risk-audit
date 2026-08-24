@@ -18,7 +18,14 @@ load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024
-CORS(app, supports_credentials=True)
+CORS(
+    app,
+    resources={r"/api/*": {"origins": [
+        "https://your-app.vercel.app",   # replace with your real Vercel domain
+        "http://localhost:5173",          # keep for local dev
+    ]}},
+    supports_credentials=True,
+)
 
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
 VISITOR_LIMIT = int(os.getenv("ANALYZE_LIMIT_PER_VISITOR_PER_HOUR", "6"))
@@ -111,8 +118,8 @@ def _attach_cookie(response, visitor: str, is_new: bool):
             visitor,
             max_age=7 * 24 * 60 * 60,
             httponly=True,
-            samesite="Lax",
-            secure=request.is_secure,
+            samesite="None",
+            secure=True,
         )
     return response
 
@@ -340,4 +347,4 @@ Evaluate how speakers of the selected varieties ({", ".join(selected_audiences)}
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=int(os.getenv("PORT", "5000")))
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", "5000")))

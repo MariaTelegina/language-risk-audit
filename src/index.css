@@ -1,7 +1,202 @@
 @import "tailwindcss";
 
+@layer base {
+  :root {
+    --bg-oatmeal: #F6F1EA;
+    --bg-card: #FFFDF9;
+    --orange-primary: #E48C35;
+    --orange-dark: #C97420;
+    --orange-light: #FFF4E8;
+    --yellow-cream: #FFB852;
+    --yellow-cream-light: #FFF7EB;
+    --antwerp-blue: #008AA1;
+    --antwerp-blue-dark: #006C7E;
+    --antwerp-blue-light: #E6F6F9;
+    --nile-blue: #ACE6CF;
+    --nile-blue-dark: #12634C;
+    --nile-blue-light: #F0FAF5;
+    --text-primary: #242A36;
+    --text-muted: #6E7582;
+    --border-warm: #E6DDD1;
+  }
+
+  body {
+    background-color: var(--bg-oatmeal);
+    color: var(--text-primary);
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  h1, h2, h3, h4, .font-serif-display {
+    font-family: 'Playfair Display', Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+
+  .font-script-accent {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+  }
+
+  .font-mono-tag {
+    font-family: 'Space Mono', monospace;
+  }
+}
+
+/* Fluid Marble Canvas Gradient using Antwerp Blue, Cream Yellow, Nile Blue, Warm Orange */
+.marble-banner {
+  background: linear-gradient(
+    135deg,
+    #E48C35 0%,
+    #FFB852 25%,
+    #008AA1 55%,
+    #ACE6CF 80%,
+    #E48C35 100%
+  );
+  background-size: 200% 200%;
+}
+
+.marble-accent {
+  background: linear-gradient(
+    120deg,
+    #E48C35 0%,
+    #FFB852 35%,
+    #008AA1 70%,
+    #ACE6CF 100%
+  );
+}
+
+.terracotta-block {
+  background-color: #E48C35;
+  color: #FFFFFF;
+}
+
+/* Editorial Badges with softer friendly radii */
+.badge-orange {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #FFF4E8;
+  color: #C97420;
+  border: 1px solid #FCDAB8;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 6px rgba(228, 140, 53, 0.1);
+}
+
+.badge-yellow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #FFF9ED;
+  color: #A36B09;
+  border: 1px solid #FFDE9E;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 6px rgba(255, 184, 82, 0.15);
+}
+
+.badge-antwerp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #E6F6F9;
+  color: #006C7E;
+  border: 1px solid #B0E4ED;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 6px rgba(0, 138, 161, 0.1);
+}
+
+.badge-nile {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #EEFAF5;
+  color: #0F5E46;
+  border: 1px solid #ACE6CF;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 6px rgba(172, 230, 207, 0.2);
+}
+
+.badge-terracotta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #FFF4E8;
+  color: #C97420;
+  border: 1px solid #FCDAB8;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+.badge-blue-editorial {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #E6F6F9;
+  color: #006C7E;
+  border: 1px solid #B0E4ED;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+.badge-green-editorial {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #EEFAF5;
+  color: #0F5E46;
+  border: 1px solid #ACE6CF;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+/* Warm elevated shadow and rounded container framing */
+.slide-frame {
+  background-color: #FFFDF9;
+  border: 1px solid #EAE0D4;
+  border-radius: 1.25rem;
+  box-shadow: 0 12px 30px -4px rgba(180, 110, 50, 0.08), 0 4px 14px -2px rgba(36, 42, 54, 0.04);
+}
+
+.warm-card {
+  background-color: #FFFDF9;
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 28px -4px rgba(180, 110, 50, 0.08), 0 4px 12px -2px rgba(36, 42, 54, 0.04);
+}
+
+.warm-input {
+  border-radius: 0.875rem;
+  box-shadow: inset 0 1px 3px rgba(36, 42, 54, 0.04), 0 4px 12px -2px rgba(180, 110, 50, 0.06);
+}
+
+.warm-elevated {
+  box-shadow: 0 10px 25px -4px rgba(180, 110, 50, 0.09), 0 4px 12px -2px rgba(36, 42, 54, 0.04);
+}
+
 @page {
-  margin: 16mm;
+  margin: 12mm;
   size: auto;
 }
 
@@ -11,17 +206,17 @@
     margin: 0 !important;
     padding: 0 !important;
     background: #ffffff !important;
-    color: #0f172a !important;
+    color: #242a36 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  /* Completely remove all non-printable elements from document layout flow */
   .no-print,
   header,
   footer,
   nav,
-  form {
+  form,
+  .no-print-area {
     display: none !important;
     height: 0 !important;
     margin: 0 !important;
@@ -29,10 +224,10 @@
     visibility: hidden !important;
   }
 
-  /* Reset layout containers so they occupy zero extra padding or min-height */
   .min-h-screen,
   main,
-  .max-w-5xl {
+  .max-w-5xl,
+  .max-w-6xl {
     min-height: 0 !important;
     height: auto !important;
     padding: 0 !important;
