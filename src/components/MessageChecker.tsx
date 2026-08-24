@@ -37,6 +37,8 @@ const ALL_CONTEXTS: { label: CommunicationContext; desc: string }[] = [
 
 const MAX_CHARS = 1500;
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
 export const MessageChecker: React.FC = () => {
   const [text, setText] = useState<string>('');
   const [selectedAudiences, setSelectedAudiences] = useState<EnglishVariety[]>([
@@ -113,7 +115,7 @@ export const MessageChecker: React.FC = () => {
     setShowCompleteNotification(false);
 
     try {
-      const response = await fetch('/api/analyze', {
+      const response = await fetch(`${API_BASE}/api/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
