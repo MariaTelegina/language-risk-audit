@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Analytics } from "@vercel/analytics/react";
 import { Navbar, NavTab } from './components/Navbar';
 import { MessageChecker } from './components/MessageChecker';
 import { ResearchTheoryPage } from './components/ResearchTheoryPage';
@@ -23,6 +24,7 @@ export default function App() {
   };
 
   return (
+    <Analytics />
     <div className="min-h-screen flex flex-col bg-[#F6F1EA] text-[#242A36] font-sans antialiased selection:bg-[#E48C35]/20 selection:text-[#E48C35] relative">
       {/* First Visit Linguistic Reflection Disclaimer Modal Overlay */}
       <DisclaimerModal
