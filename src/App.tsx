@@ -24,8 +24,9 @@ export default function App() {
   };
 
   return (
-    <Analytics />
+    
     <div className="min-h-screen flex flex-col bg-[#F6F1EA] text-[#242A36] font-sans antialiased selection:bg-[#E48C35]/20 selection:text-[#E48C35] relative">
+      <Analytics />
       {/* First Visit Linguistic Reflection Disclaimer Modal Overlay */}
       <DisclaimerModal
         isOpen={isDisclaimerOpen}
